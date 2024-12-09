@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: proshop-frontend
+  name: proshop-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: proshop-frontend
+  template:
+    metadata:
+      name: proshop-frontend
+      labels:
+        app: proshop-frontend
+    spec:
+      initContainers:
+      - name: wait-for-backend
+        image: busybox
+        command: ['sh', '-c', 'until nc -z backend 5000; do echo waiting for backend; sleep 5; done;']
+      containers:
+      - image: phsinghka/proshop-frontend:v1
+        name: proshop-frontend
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}

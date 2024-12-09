@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: proshop-backend
+  name: proshop-backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: proshop-backend
+  template:
+    metadata:
+      name: proshop-backend
+      labels:
+        app: proshop-backend
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', 'until nc -z mongo 27017; do echo waiting for mongo; sleep 5; done;']
+      containers:
+      - image: phsinghka/proshop-backend:{{ .Values.image.tag }}
+        name: proshop-backend
+        ports:
+        - containerPort: 5000
+        resources: {}
+status: {}
